@@ -1,9 +1,11 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-VisualStudioVersion = 15.0.26730.8
+VisualStudioVersion = 15.0.26730.10
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WpfApp1", "WpfApp1\WpfApp1.csproj", "{BCA1BC1D-1CBF-4278-B456-0B8A0A974FD8}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WpfApp1Tests", "WpfApp1Tests\WpfApp1Tests.csproj", "{3D09CFAC-FEF4-4B31-8E02-7037E6B699C4}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -15,6 +17,10 @@ Global
 		{BCA1BC1D-1CBF-4278-B456-0B8A0A974FD8}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{BCA1BC1D-1CBF-4278-B456-0B8A0A974FD8}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{BCA1BC1D-1CBF-4278-B456-0B8A0A974FD8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3D09CFAC-FEF4-4B31-8E02-7037E6B699C4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3D09CFAC-FEF4-4B31-8E02-7037E6B699C4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3D09CFAC-FEF4-4B31-8E02-7037E6B699C4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3D09CFAC-FEF4-4B31-8E02-7037E6B699C4}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

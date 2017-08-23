@@ -229,18 +229,8 @@ namespace WpfApp1
         private void CalcAvg(object sender, RoutedEventArgs e)
         {
             //Calc Avg from every Student
-            var avg = 0d;
-            var counter = 0;
-            Persons.ToList().ForEach(person =>
-            {
-                var note = person.CheckNote();
-                if (note != 0)
-                {
-                    avg += note;
-                    counter++;
-                }
-            });
-            LAvg.Content = avg / counter;
+            var average = Persons.Where(person => person.CheckNote() != 0).Average(person => person.CheckNote());
+            LAvg.Content = average;
         }
 
         #endregion
