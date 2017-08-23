@@ -18,7 +18,7 @@ namespace WpfApp1
         /// <summary>
         /// Variables to Define Debug state 
         /// </summary>
-        private const bool DEBUG = false;
+        private const bool DEBUG = true;
 
         #endregion
 
@@ -175,9 +175,16 @@ namespace WpfApp1
             //Serialize and save as a Bin.
             try
             {
+                //Detach Event so I can serialize
+                var observableCollection = new ObservableCollection<IPerson>(_persons);
+                foreach (var person in observableCollection)
+                {
+                    person.nameEvent -= 
+                }
+
                 var file = File.OpenWrite("Persons.bin");
                 var binaryFormatter = new BinaryFormatter();
-                binaryFormatter.Serialize(file, Persons);
+                binaryFormatter.Serialize(file, observableCollection);
                 file.Close();
                 LStatus.Content = "List Saved";
             }
@@ -230,8 +237,13 @@ namespace WpfApp1
         /// <param name="person"></param>
         private void addIPerson(IPerson person)
         {
-            person.nameEvent += (sender, name) => LLast.Content = name + " changed last" ;
+            person.nameEvent += PersonOnNameEvent ;
             Persons.Add(person);
+        }
+
+        private void PersonOnNameEvent(object sender, string name)
+        {
+            LLast.Content = name + " changed last";
         }
 
         #endregion
@@ -244,7 +256,6 @@ namespace WpfApp1
         }
 
         #endregion
-
         private void SearchEvent(object sender, RoutedEventArgs e)
         {
             _search.Clear();

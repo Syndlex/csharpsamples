@@ -7,6 +7,7 @@ namespace WpfApp1
     public class Student : IPerson
     {
         private string _name;
+
         public event NameHandler nameEvent;
 
         public string Name

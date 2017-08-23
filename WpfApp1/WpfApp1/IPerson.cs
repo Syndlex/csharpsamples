@@ -24,9 +24,7 @@ namespace WpfApp1
         ///Even when name changes
         /// </summary>
         event NameHandler nameEvent;
-
-
     }
-
-    public delegate void NameHandler (object sender, string name);
+    
+    public delegate void NameHandler(object sender, string name);
 }
