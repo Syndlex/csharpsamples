@@ -179,7 +179,7 @@ namespace WpfApp1
                 var observableCollection = new ObservableCollection<IPerson>(_persons);
                 foreach (var person in observableCollection)
                 {
-                    person.nameEvent -= 
+                    person.nameEvent -= PersonOnNameEvent;
                 }
 
                 var file = File.OpenWrite("Persons.bin");
@@ -231,16 +231,6 @@ namespace WpfApp1
             }
         }
 
-        /// <summary>
-        /// Here is a Implementation of the Event.
-        /// </summary>
-        /// <param name="person"></param>
-        private void addIPerson(IPerson person)
-        {
-            person.nameEvent += PersonOnNameEvent ;
-            Persons.Add(person);
-        }
-
         private void PersonOnNameEvent(object sender, string name)
         {
             LLast.Content = name + " changed last";
@@ -254,20 +244,6 @@ namespace WpfApp1
             var average = Persons.Where(person => person.CheckNote() != 0).Average(person => person.CheckNote());
             LAvg.Content = average;
         }
-
-        #endregion
-        private void SearchEvent(object sender, RoutedEventArgs e)
-        {
-            _search.Clear();
-            var searchName = TbSearchName.Text;
-
-            var enumerable = _persons.Where(person => person.Name.Equals(searchName));
-            foreach (var person in enumerable)
-            {
-                _search.Add(person);
-            }
-        }
-
         private void SortSubject(object sender, RoutedEventArgs e)
         {
             _search.Clear();
@@ -289,5 +265,35 @@ namespace WpfApp1
                 _search.Add(person);
             }
         }
+
+        #endregion
+        
+        #region EventMethods
+
+        private void SearchEvent(object sender, RoutedEventArgs e)
+        {
+            _search.Clear();
+            var searchName = TbSearchName.Text;
+
+            var enumerable = _persons.Where(person => person.Name.Equals(searchName));
+            foreach (var person in enumerable)
+            {
+                _search.Add(person);
+            }
+        }
+
+        #endregion
+
+
+        /// <summary>
+        /// Here is a Implementation of the Event.
+        /// </summary>
+        /// <param name="person"></param>
+        private void addIPerson(IPerson person)
+        {
+            person.nameEvent += PersonOnNameEvent;
+            Persons.Add(person);
+        }
+
     }
 }
