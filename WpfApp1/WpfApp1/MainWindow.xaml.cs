@@ -1,52 +1,89 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
+using System.Runtime.Serialization;
 using System.Runtime.Serialization.Formatters.Binary;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 
 namespace WpfApp1
 {
     /// <summary>
     /// Interaktionslogik für MainWindow.xaml
     /// </summary>
-    public partial class MainWindow : Window
+    public partial class MainWindow
     {
-        private ObservableCollection<IPerson> _students;
+        #region Constants
 
         /// <summary>
-        /// A List of Students who should be shown in the list.
+        /// Variables to Define Debug state 
         /// </summary>
-        public ObservableCollection<IPerson> Students
+        private const bool DEBUG = false;
+
+        #endregion
+
+        #region Fields
+
+        /// <summary>
+        /// List that will be shown in the List
+        /// </summary>
+        private ObservableCollection<IPerson> _persons;
+
+        /// <summary>
+        /// List that conatins only Persons with the same 
+        /// </summary>
+        private ObservableCollection<IPerson> _search;
+
+        #endregion
+
+        #region Properties
+
+        /// <summary>
+        /// A List of Persons who will be shown in the list.
+        /// </summary>
+        public ObservableCollection<IPerson> Persons
         {
             get
             {
-                if (_students != null) return _students;
+                if (_persons != null) return _persons;
 
-                _students = new ObservableCollection<IPerson>();
-                return _students;
+                _persons = new ObservableCollection<IPerson>();
+                return _persons;
             }
-            set => _students = value;
+            set => _persons = value;
         }
+
+        /// <summary>
+        /// A List of Persons who will be shown in the list.
+        /// </summary>
+        public ObservableCollection<IPerson> Search
+        {
+            get
+            {
+                if (_search != null) return _search;
+
+                _search = new ObservableCollection<IPerson>();
+                return _search;
+            }
+            set => _search = value;
+        }
+
+        #endregion
+
+        #region Main
 
         public MainWindow()
         {
-            var student = new Student {Name = "Marcel", Note = 1.3};
-            Students.Add(student);
             InitializeComponent();
-            LStudents.ItemsSource = Students;
+            LStudents.ItemsSource = Persons;
+            ListSearch.ItemsSource = Search;
         }
+
+        #endregion
+
+        #region Event Lisseners
+
+        #region AddToList
 
         private void AddStudent(object sender, RoutedEventArgs e)
         {
@@ -63,6 +100,7 @@ namespace WpfApp1
             LWStudName.Visibility = Visibility.Hidden;
             LWStudSubject.Visibility = Visibility.Hidden;
 
+            //Save Correct Student in List.
             var tryParse = double.TryParse(note, out double parsednote);
             var nameEmpty = string.IsNullOrEmpty(name);
             var subjectEmpty = string.IsNullOrEmpty(subject);
@@ -74,12 +112,12 @@ namespace WpfApp1
                     Note = parsednote,
                     Subject = subject
                 };
-                if (!Students.Contains(student))
-                    Students.Add(student);
+                if (!Persons.Contains(student))
+                    Persons.Add(student);
             }
             else
             {
-                //Show Label if somethink is wrong
+                //Show Label if something is wrong
                 if (nameEmpty)
                     LWStudName.Visibility = Visibility.Visible;
                 if (!tryParse)
@@ -87,48 +125,6 @@ namespace WpfApp1
                 if (subjectEmpty)
                     LWStudSubject.Visibility = Visibility.Visible;
             }
-        }
-
-        private void Save(object sender, RoutedEventArgs e)
-        {
-            //Serialize and save as a Bin.
-            var file = File.OpenWrite("Students.bin");
-            var binaryFormatter = new BinaryFormatter();
-            binaryFormatter.Serialize(file, Students);
-            file.Close();
-            LStatus.Content = "List Saved";
-        }
-
-        private void Load(object sender, RoutedEventArgs e)
-        {
-            //DeSerialize and Load in List view.
-            var fileStream = File.OpenRead("Students.bin");
-            var binaryFormatter = new BinaryFormatter();
-            var deserialize = (ObservableCollection<IPerson>) binaryFormatter.Deserialize(fileStream);
-            foreach (var student in deserialize)
-            {
-                if (!Students.Contains(student))
-                    Students.Add(student);
-            }
-            fileStream.Close();
-            LStatus.Content = "List Loaded";
-        }
-
-        private void CalcAvg(object sender, RoutedEventArgs e)
-        {
-            //Calc Avg from every Student
-            var avg = 0d;
-            var counter = 0;
-            Students.ToList().ForEach(person =>
-            {
-                var note = person.CheckNote();
-                if (note != 0)
-                {
-                    avg += note;
-                    counter++;
-                }
-            });
-            LAvg.Content = avg / counter;
         }
 
         private void AddTeacher(object sender, RoutedEventArgs e)
@@ -141,9 +137,11 @@ namespace WpfApp1
                 throw new NullReferenceException("Name or Note where null");
             }
 
+            //Hide Label Warnings
             LWTeacherName.Visibility = Visibility.Hidden;
             LWTeacherSubject.Visibility = Visibility.Hidden;
 
+            //Save Correct Student in List.
             var nameEmpty = string.IsNullOrEmpty(name);
             var subjectEmpty = string.IsNullOrEmpty(subject);
             if (!nameEmpty && !subjectEmpty)
@@ -153,18 +151,131 @@ namespace WpfApp1
                     Name = name,
                     Subject = subject
                 };
-                if (!Students.Contains(teacher))
-                    Students.Add(teacher);
+                if (!Persons.Contains(teacher))
+                    Persons.Add(teacher);
             }
             else
             {
-                //Show Label if somethink is wrong
+                //Show Label if something is wrong
                 if (nameEmpty)
                 {
                     LWTeacherName.Visibility = Visibility.Visible;
                 }
                 if (subjectEmpty)
                     LWTeacherSubject.Visibility = Visibility.Visible;
+            }
+        }
+
+        #endregion
+
+        #region Save and Load
+
+        private void Save(object sender, RoutedEventArgs e)
+        {
+            //Serialize and save as a Bin.
+            try
+            {
+                var file = File.OpenWrite("Persons.bin");
+                var binaryFormatter = new BinaryFormatter();
+                binaryFormatter.Serialize(file, Persons);
+                file.Close();
+                LStatus.Content = "List Saved";
+            }
+            catch (Exception exception)
+            {
+                LStatus.Content = "File could not be Saved";
+                if (DEBUG)
+                {
+                    Console.WriteLine(exception);
+                    throw;
+                }
+            }
+        }
+
+        private void Load(object sender, RoutedEventArgs e)
+        {
+            //DeSerialize and Load in List view.
+            try
+            {
+                var fileStream = File.OpenRead("Persons.bin");
+                var binaryFormatter = new BinaryFormatter();
+                var deserialize = (ObservableCollection<IPerson>) binaryFormatter.Deserialize(fileStream);
+                foreach (var student in deserialize)
+                {
+                    if (!Persons.Contains(student))
+                        Persons.Add(student);
+                }
+                fileStream.Close();
+                LStatus.Content = "List Loaded";
+            }
+            catch (FileNotFoundException exception)
+            {
+                LStatus.Content = "File is Not Existing.";
+                if (DEBUG)
+                {
+                    Console.WriteLine(exception);
+                    throw;
+                }
+            }
+            catch (SerializationException exception)
+            {
+                Console.WriteLine(exception);
+                throw;
+            }
+        }
+
+        #endregion
+
+        private void CalcAvg(object sender, RoutedEventArgs e)
+        {
+            //Calc Avg from every Student
+            var avg = 0d;
+            var counter = 0;
+            Persons.ToList().ForEach(person =>
+            {
+                var note = person.CheckNote();
+                if (note != 0)
+                {
+                    avg += note;
+                    counter++;
+                }
+            });
+            LAvg.Content = avg / counter;
+        }
+
+        #endregion
+
+        private void SearchEvent(object sender, RoutedEventArgs e)
+        {
+            _search.Clear();
+            var searchName = TbSearchName.Text;
+
+            var enumerable = _persons.Where(person => person.Name.Equals(searchName));
+            foreach (var person in enumerable)
+            {
+                _search.Add(person);
+            }
+        }
+
+        private void SortSubject(object sender, RoutedEventArgs e)
+        {
+            _search.Clear();
+            var orderedEnumerable = _persons.OrderBy(person => person.Subject);
+
+            foreach (var person in orderedEnumerable)
+            {
+                _search.Add(person);
+            }
+        }
+
+        private void SortName(object sender, RoutedEventArgs e)
+        {
+            _search.Clear();
+            var orderedEnumerable = _persons.OrderBy(person => person.Name);
+
+            foreach (var person in orderedEnumerable)
+            {
+                _search.Add(person);
             }
         }
     }
