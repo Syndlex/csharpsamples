@@ -19,5 +19,14 @@ namespace WpfApp1
         /// </summary>
         /// <returns></returns>
         double CheckNote();
+
+        /// <summary>
+        ///Even when name changes
+        /// </summary>
+        event NameHandler nameEvent;
+
+
     }
+
+    public delegate void NameHandler (object sender, string name);
 }

@@ -3,10 +3,23 @@
 namespace WpfApp1
 {
     [Serializable]
-    public class Teacher :IPerson
+    public class Teacher : IPerson
     {
-        public string Name { get; set; }
+        private string _name;
+        public event NameHandler nameEvent;
+
+        public string Name
+        {
+            get
+            {
+                nameEvent?.Invoke(this, _name);
+                return _name;
+            }
+            set => _name = value;
+        }
+
         public string Subject { get; set; }
+
         public double CheckNote()
         {
             return 0;

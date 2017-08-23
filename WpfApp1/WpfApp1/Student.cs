@@ -1,11 +1,23 @@
 ﻿using System;
+using System.Windows.Documents;
 
 namespace WpfApp1
 {
     [Serializable]
     public class Student : IPerson
     {
-        public string Name { get; set; }
+        private string _name;
+        public event NameHandler nameEvent;
+
+        public string Name
+        {
+            get
+            {
+                nameEvent?.Invoke(this, _name);
+                return _name;
+            }
+            set => _name = value;
+        }
 
         /// <summary>
         /// Subject where the Student Participated.
@@ -19,6 +31,7 @@ namespace WpfApp1
         {
             return Note;
         }
+
 
         protected bool Equals(Student other)
         {

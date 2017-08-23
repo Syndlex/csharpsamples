@@ -113,7 +113,7 @@ namespace WpfApp1
                     Subject = subject
                 };
                 if (!Persons.Contains(student))
-                    Persons.Add(student);
+                    addIPerson(student);
             }
             else
             {
@@ -152,7 +152,7 @@ namespace WpfApp1
                     Subject = subject
                 };
                 if (!Persons.Contains(teacher))
-                    Persons.Add(teacher);
+                    addIPerson(teacher);
             }
             else
             {
@@ -203,7 +203,7 @@ namespace WpfApp1
                 foreach (var student in deserialize)
                 {
                     if (!Persons.Contains(student))
-                        Persons.Add(student);
+                        addIPerson(student);
                 }
                 fileStream.Close();
                 LStatus.Content = "List Loaded";
@@ -222,6 +222,16 @@ namespace WpfApp1
                 Console.WriteLine(exception);
                 throw;
             }
+        }
+
+        /// <summary>
+        /// Here is a Implementation of the Event.
+        /// </summary>
+        /// <param name="person"></param>
+        private void addIPerson(IPerson person)
+        {
+            person.nameEvent += (sender, name) => LLast.Content = name + " changed last" ;
+            Persons.Add(person);
         }
 
         #endregion
